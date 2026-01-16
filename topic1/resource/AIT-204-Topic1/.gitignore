@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Generated Data Files
+*.csv
+*.xlsx
+*.json
+*.html
+
+# Streamlit
+.streamlit/secrets.toml
+# Keep config.toml for deployment
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude
+.claude/
+
+# But keep example outputs
+!example_*.csv
+!example_*.html

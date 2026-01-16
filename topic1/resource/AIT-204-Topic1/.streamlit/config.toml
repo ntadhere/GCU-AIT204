@@ -1,0 +1,28 @@
+# Streamlit Configuration for Deployment
+# This file configures the appearance and behavior of the app
+
+[theme]
+# Primary color - used for interactive elements
+primaryColor = "#1f77b4"
+
+# Background color
+backgroundColor = "#FFFFFF"
+
+# Secondary background color - used for sidebar and other elements
+secondaryBackgroundColor = "#F0F2F6"
+
+# Text color
+textColor = "#262730"
+
+# Font family
+font = "sans serif"
+
+[server]
+# Server settings for deployment
+headless = true
+enableCORS = false
+enableXsrfProtection = true
+
+[browser]
+# Browser settings
+gatherUsageStats = false
