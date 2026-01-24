@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python backend/model.py:*)",
+      "Bash(python3:*)"
+    ]
+  }
+}

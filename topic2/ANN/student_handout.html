@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIT-204: MNIST Digit Recognition - Student Handout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: #1e3c72;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #2a5298;
+            font-size: 1.4em;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-size: 0.9em;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: #f8f8f2;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .task-box {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .task-box h3 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .architecture-diagram {
+            background: white;
+            border: 2px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .comparison {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-item {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border: 2px solid #dee2e6;
+        }
+
+        .comparison-item h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            background: #2d2d2d;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .highlight {
+            background: yellow;
+            padding: 2px 4px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MNIST Digit Recognition</h1>
+            <p>Artificial Neural Networks (ANN) - Student Handout</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">AIT-204 | GCU | Spring 2026</p>
+        </header>
+
+        <div class="content">
+            <!-- Section 1: Understanding ANNs -->
+            <section id="section1">
+                <h2>1. Understanding Artificial Neural Networks (ANNs)</h2>
+
+                <h3>What is an Artificial Neural Network?</h3>
+                <p>
+                    An <strong>Artificial Neural Network (ANN)</strong> is a computational model inspired by the biological neural networks in animal brains. It consists of interconnected nodes (neurons) organized in layers that process information and learn patterns from data.
+                </p>
+
+                <div class="info-box">
+                    <strong>Key Components of an ANN:</strong>
+                    <ul>
+                        <li><strong>Input Layer:</strong> Receives the raw data (e.g., pixel values of an image)</li>
+                        <li><strong>Hidden Layers:</strong> Process and transform the input through weighted connections</li>
+                        <li><strong>Output Layer:</strong> Produces the final prediction or classification</li>
+                        <li><strong>Weights and Biases:</strong> Learnable parameters that the network adjusts during training</li>
+                        <li><strong>Activation Functions:</strong> Non-linear functions (like ReLU, Sigmoid) that introduce complexity</li>
+                    </ul>
+                </div>
+
+                <h3>How ANNs Work: The Forward Pass</h3>
+                <ol>
+                    <li><strong>Input Processing:</strong> Data enters through the input layer</li>
+                    <li><strong>Weighted Sum:</strong> Each neuron calculates: z = (w₁×x₁ + w₂×x₂ + ... + wₙ×xₙ) + bias</li>
+                    <li><strong>Activation:</strong> Apply activation function: a = f(z)</li>
+                    <li><strong>Propagation:</strong> Output from one layer becomes input to the next</li>
+                    <li><strong>Prediction:</strong> Final layer produces the output (e.g., probability for each digit 0-9)</li>
+                </ol>
+
+                <h3>ANN Architecture for MNIST Digit Recognition</h3>
+
+                <div class="architecture-diagram">
+                    <p style="font-family: monospace; line-height: 2;">
+                        <strong>Input Image (28×28 pixels)</strong><br>
+                        ↓ Flatten to 784 neurons<br>
+                        ━━━━━━━━━━━━━━━━━━━━━<br>
+                        <strong>Input Layer: 784 neurons</strong><br>
+                        ↓ Weights + ReLU activation<br>
+                        ━━━━━━━━━━━━━━━━━━━━━<br>
+                        <strong>Hidden Layer 1: 512 neurons</strong><br>
+                        ↓ Dropout (20%) + ReLU<br>
+                        ━━━━━━━━━━━━━━━━━━━━━<br>
+                        <strong>Hidden Layer 2: 256 neurons</strong><br>
+                        ↓ Dropout (20%) + ReLU<br>
+                        ━━━━━━━━━━━━━━━━━━━━━<br>
+                        <strong>Hidden Layer 3: 128 neurons</strong><br>
+                        ↓ Dropout (20%) + Softmax<br>
+                        ━━━━━━━━━━━━━━━━━━━━━<br>
+                        <strong>Output Layer: 10 neurons</strong><br>
+                        (Probabilities for digits 0-9)
+                    </p>
+                </div>
+
+                <h3>Why This Architecture for MNIST?</h3>
+                <ul>
+                    <li><strong>784 Input Neurons:</strong> Each 28×28 pixel is flattened into a 1D array of 784 values (28 × 28 = 784)</li>
+                    <li><strong>Decreasing Layer Sizes (512→256→128):</strong> Creates a "funnel" that compresses information while extracting important features</li>
+                    <li><strong>Dropout Layers:</strong> Randomly disable 20% of neurons during training to prevent overfitting and improve generalization</li>
+                    <li><strong>ReLU Activation:</strong> f(x) = max(0, x) - Introduces non-linearity and helps the network learn complex patterns</li>
+                    <li><strong>Softmax Output:</strong> Converts final layer outputs into probabilities that sum to 1.0</li>
+                    <li><strong>10 Output Neurons:</strong> One for each digit class (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)</li>
+                </ul>
+
+                <h3>Training Process</h3>
+                <p>The network learns through <strong>backpropagation</strong>:</p>
+                <ol>
+                    <li><strong>Forward Pass:</strong> Input image flows through network to produce prediction</li>
+                    <li><strong>Loss Calculation:</strong> Compare prediction to actual label using categorical cross-entropy</li>
+                    <li><strong>Backward Pass:</strong> Calculate gradients (how much each weight contributed to error)</li>
+                    <li><strong>Weight Update:</strong> Adjust weights using Adam optimizer to reduce error</li>
+                    <li><strong>Repeat:</strong> Process continues for all training images over multiple epochs</li>
+                </ol>
+
+                <div class="info-box">
+                    <strong>Training on MNIST:</strong><br>
+                    - <strong>Training Set:</strong> 60,000 handwritten digit images<br>
+                    - <strong>Test Set:</strong> 10,000 images for evaluation<br>
+                    - <strong>Epochs:</strong> 10 complete passes through training data<br>
+                    - <strong>Batch Size:</strong> 128 images processed together<br>
+                    - <strong>Expected Accuracy:</strong> 97-98% on test data
+                </div>
+
+                <h3>ANN vs CNN: Why We Use ANN Here</h3>
+                <table>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>ANN (Fully Connected)</th>
+                        <th>CNN (Convolutional)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Input Processing</strong></td>
+                        <td>Flattens image to 1D array</td>
+                        <td>Preserves 2D spatial structure</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Parameters</strong></td>
+                        <td>~670,000 parameters</td>
+                        <td>~50,000 parameters (fewer)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Spatial Awareness</strong></td>
+                        <td>No inherent spatial understanding</td>
+                        <td>Detects local patterns (edges, shapes)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Best For</strong></td>
+                        <td>Small images, simple patterns, tabular data</td>
+                        <td>Large images, complex patterns, objects</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MNIST Performance</strong></td>
+                        <td>97-98% accuracy</td>
+                        <td>99%+ accuracy</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Training Speed</strong></td>
+                        <td>Faster (simpler architecture)</td>
+                        <td>Slower (convolution operations)</td>
+                    </tr>
+                </table>
+
+                <p>
+                    <strong>For this project, we use ANN</strong> to understand the fundamentals of neural networks. While CNNs achieve slightly better accuracy on MNIST, ANNs are simpler to understand and demonstrate core concepts like forward propagation, backpropagation, and gradient descent.
+                </p>
+            </section>
+
+            <!-- Section 2: TensorFlow vs PyTorch -->
+            <section id="section2">
+                <h2>2. Switching from TensorFlow to PyTorch</h2>
+
+                <h3>Overview: TensorFlow vs PyTorch</h3>
+
+                <div class="comparison">
+                    <div class="comparison-item">
+                        <h4>TensorFlow</h4>
+                        <ul>
+                            <li>Developed by Google Brain (2015)</li>
+                            <li>High-level API: Keras</li>
+                            <li>Static computation graphs</li>
+                            <li>Better for production deployment</li>
+                            <li>TensorFlow Serving, TF Lite for mobile</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-item">
+                        <h4>PyTorch</h4>
+                        <ul>
+                            <li>Developed by Meta/Facebook (2016)</li>
+                            <li>Native Python integration</li>
+                            <li>Dynamic computation graphs</li>
+                            <li>Better for research & prototyping</li>
+                            <li>More intuitive debugging</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Industry Preferences</h3>
+
+                <div class="info-box">
+                    <strong>When TensorFlow is Preferred:</strong>
+                    <ul>
+                        <li><strong>Production Systems:</strong> Banks, healthcare, large-scale apps (Google, Uber, Airbnb)</li>
+                        <li><strong>Mobile/Edge Deployment:</strong> TensorFlow Lite for Android/iOS apps</li>
+                        <li><strong>Large Organizations:</strong> Mature ecosystem, better enterprise support</li>
+                        <li><strong>JavaScript Integration:</strong> TensorFlow.js for web applications</li>
+                        <li><strong>Industries:</strong> Finance, healthcare, autonomous vehicles (production stability crucial)</li>
+                    </ul>
+                </div>
+
+                <div class="success-box">
+                    <strong>When PyTorch is Preferred:</strong>
+                    <ul>
+                        <li><strong>Research & Academia:</strong> Universities, AI research labs (Stanford, MIT, OpenAI)</li>
+                        <li><strong>Computer Vision:</strong> Image segmentation, object detection (Facebook, Tesla AI)</li>
+                        <li><strong>Natural Language Processing:</strong> Transformers, GPT models (Hugging Face uses PyTorch)</li>
+                        <li><strong>Rapid Prototyping:</strong> Startups, experimentation, quick iterations</li>
+                        <li><strong>Industries:</strong> Tech companies focused on AI research (Meta, Microsoft, Tesla)</li>
+                    </ul>
+                </div>
+
+                <h3>Market Share & Trends (2025-2026)</h3>
+                <ul>
+                    <li><strong>Research Papers:</strong> PyTorch dominates (~75% of papers at NeurIPS, ICML)</li>
+                    <li><strong>Job Postings:</strong> Nearly equal demand (TensorFlow 48%, PyTorch 52%)</li>
+                    <li><strong>Industry Adoption:</strong> TensorFlow leads in production (60%), PyTorch catching up</li>
+                    <li><strong>Recommendation:</strong> Learn both! PyTorch for learning concepts, TensorFlow for deployment</li>
+                </ul>
+
+                <h3>Code Comparison: TensorFlow vs PyTorch</h3>
+
+                <h4>Current Implementation (TensorFlow/Keras)</h4>
+                <pre><code># backend/model.py (TensorFlow)
+from tensorflow import keras
+from tensorflow.keras import layers
+
+def build_model():
+    model = keras.Sequential([
+        layers.Input(shape=(784,)),
+        layers.Dense(512, activation='relu'),
+        layers.Dropout(0.2),
+        layers.Dense(256, activation='relu'),
+        layers.Dropout(0.2),
+        layers.Dense(128, activation='relu'),
+        layers.Dropout(0.2),
+        layers.Dense(10, activation='softmax')
+    ])
+
+    model.compile(
+        optimizer='adam',
+        loss='categorical_crossentropy',
+        metrics=['accuracy']
+    )
+
+    return model
+
+# Training
+model.fit(x_train, y_train, epochs=10, batch_size=128)</code></pre>
+
+                <h4>PyTorch Implementation</h4>
+                <pre><code># backend/model_pytorch.py (PyTorch)
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader, TensorDataset
+
+class MNISTNet(nn.Module):
+    def __init__(self):
+        super(MNISTNet, self).__init__()
+        self.fc1 = nn.Linear(784, 512)
+        self.dropout1 = nn.Dropout(0.2)
+        self.fc2 = nn.Linear(512, 256)
+        self.dropout2 = nn.Dropout(0.2)
+        self.fc3 = nn.Linear(256, 128)
+        self.dropout3 = nn.Dropout(0.2)
+        self.fc4 = nn.Linear(128, 10)
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        x = x.view(-1, 784)  # Flatten
+        x = self.relu(self.fc1(x))
+        x = self.dropout1(x)
+        x = self.relu(self.fc2(x))
+        x = self.dropout2(x)
+        x = self.relu(self.fc3(x))
+        x = self.dropout3(x)
+        x = self.fc4(x)
+        return x
+
+# Training setup
+model = MNISTNet()
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters())
+
+# Training loop
+for epoch in range(10):
+    for batch_data, batch_labels in train_loader:
+        optimizer.zero_grad()
+        outputs = model(batch_data)
+        loss = criterion(outputs, batch_labels)
+        loss.backward()
+        optimizer.step()</code></pre>
+
+                <h3>Complete PyTorch Implementation</h3>
+
+                <p>To implement the PyTorch version, create <code>backend/model_pytorch.py</code>:</p>
+
+                <pre><code>import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader, TensorDataset
+from torchvision import datasets, transforms
+import numpy as np
+
+
+class MNISTNet(nn.Module):
+    def __init__(self):
+        super(MNISTNet, self).__init__()
+        self.fc1 = nn.Linear(784, 512)
+        self.fc2 = nn.Linear(512, 256)
+        self.fc3 = nn.Linear(256, 128)
+        self.fc4 = nn.Linear(128, 10)
+        self.dropout = nn.Dropout(0.2)
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        x = x.view(-1, 784)
+        x = self.relu(self.fc1(x))
+        x = self.dropout(x)
+        x = self.relu(self.fc2(x))
+        x = self.dropout(x)
+        x = self.relu(self.fc3(x))
+        x = self.dropout(x)
+        x = self.fc4(x)
+        return x
+
+
+class MNISTModelPyTorch:
+    def __init__(self, model_path='mnist_model.pth'):
+        self.model_path = model_path
+        self.model = MNISTNet()
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.model.to(self.device)
+
+    def train(self, epochs=10, batch_size=128):
+        # Load MNIST dataset
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.5,), (0.5,))
+        ])
+
+        train_dataset = datasets.MNIST(root='./data', train=True,
+                                      download=True, transform=transform)
+        test_dataset = datasets.MNIST(root='./data', train=False,
+                                     download=True, transform=transform)
+
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.Adam(self.model.parameters())
+
+        # Training loop
+        for epoch in range(epochs):
+            self.model.train()
+            train_loss = 0
+            correct = 0
+            total = 0
+
+            for batch_idx, (data, target) in enumerate(train_loader):
+                data, target = data.to(self.device), target.to(self.device)
+
+                optimizer.zero_grad()
+                output = self.model(data)
+                loss = criterion(output, target)
+                loss.backward()
+                optimizer.step()
+
+                train_loss += loss.item()
+                _, predicted = output.max(1)
+                total += target.size(0)
+                correct += predicted.eq(target).sum().item()
+
+            train_acc = 100. * correct / total
+            print(f'Epoch {epoch+1}/{epochs} - Loss: {train_loss/len(train_loader):.4f} - Acc: {train_acc:.2f}%')
+
+        # Test evaluation
+        self.model.eval()
+        test_loss = 0
+        correct = 0
+        total = 0
+
+        with torch.no_grad():
+            for data, target in test_loader:
+                data, target = data.to(self.device), target.to(self.device)
+                output = self.model(data)
+                test_loss += criterion(output, target).item()
+                _, predicted = output.max(1)
+                total += target.size(0)
+                correct += predicted.eq(target).sum().item()
+
+        test_acc = 100. * correct / total
+        print(f'\nTest Accuracy: {test_acc:.2f}%')
+
+        self.save_model()
+        return test_acc
+
+    def save_model(self):
+        torch.save(self.model.state_dict(), self.model_path)
+        print(f'Model saved to {self.model_path}')
+
+    def load_model(self):
+        self.model.load_state_dict(torch.load(self.model_path))
+        self.model.eval()
+        print(f'Model loaded from {self.model_path}')
+
+    def predict(self, image):
+        self.model.eval()
+        with torch.no_grad():
+            image_tensor = torch.FloatTensor(image).unsqueeze(0).to(self.device)
+            output = self.model(image_tensor)
+            probabilities = torch.nn.functional.softmax(output, dim=1)
+            predicted = output.argmax(1).item()
+            confidence = probabilities[0].cpu().numpy()
+
+        return predicted, confidence
+
+
+if __name__ == '__main__':
+    model = MNISTModelPyTorch()
+    model.train(epochs=10)
+</code></pre>
+
+                <div class="warning-box">
+                    <strong>Dependencies for PyTorch:</strong><br>
+                    Add to requirements.txt: <code>torch>=2.0.0</code> and <code>torchvision>=0.15.0</code><br>
+                    Install: <code>pip install torch torchvision</code>
+                </div>
+
+                <h3>Key Differences</h3>
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>TensorFlow/Keras</th>
+                        <th>PyTorch</th>
+                    </tr>
+                    <tr>
+                        <td>Model Definition</td>
+                        <td><code>keras.Sequential()</code></td>
+                        <td><code>nn.Module</code> class</td>
+                    </tr>
+                    <tr>
+                        <td>Forward Pass</td>
+                        <td>Implicit (automatic)</td>
+                        <td>Explicit <code>forward()</code> method</td>
+                    </tr>
+                    <tr>
+                        <td>Training</td>
+                        <td><code>model.fit()</code></td>
+                        <td>Manual training loop</td>
+                    </tr>
+                    <tr>
+                        <td>Loss Function</td>
+                        <td><code>categorical_crossentropy</code></td>
+                        <td><code>nn.CrossEntropyLoss()</code></td>
+                    </tr>
+                    <tr>
+                        <td>Optimizer</td>
+                        <td><code>optimizer='adam'</code></td>
+                        <td><code>optim.Adam()</code></td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- Section 3: Improvement Tasks -->
+            <section id="section3">
+                <h2>3. Student Assignment: Improve the Model</h2>
+
+                <div class="task-box">
+                    <h3>Task 1: Model Architecture Improvements</h3>
+                    <p><strong>Objective:</strong> Modify the neural network architecture to achieve higher accuracy.</p>
+
+                    <strong>Experiments to Try:</strong>
+                    <ol>
+                        <li>
+                            <strong>Add More Layers</strong>
+                            <ul>
+                                <li>Current: 3 hidden layers (512→256→128)</li>
+                                <li>Try: 4-5 hidden layers</li>
+                                <li>Example: 784→512→384→256→128→64→10</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Adjust Layer Sizes</strong>
+                            <ul>
+                                <li>Try larger first layer: 1024 instead of 512</li>
+                                <li>Try different patterns: pyramid (decreasing) vs hourglass (decrease then increase)</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Modify Dropout Rates</strong>
+                            <ul>
+                                <li>Current: 0.2 (20%)</li>
+                                <li>Try: 0.3, 0.4, or 0.5</li>
+                                <li>Try different rates for different layers</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Try Different Activation Functions</strong>
+                            <ul>
+                                <li>Current: ReLU</li>
+                                <li>Try: LeakyReLU, ELU, SELU, Swish</li>
+                                <li>Compare performance</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Add Batch Normalization</strong>
+                            <ul>
+                                <li>Insert BatchNormalization layers after Dense layers</li>
+                                <li>Helps with training stability and speed</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <strong>Deliverables:</strong>
+                    <ul>
+                        <li>Modified <code>model.py</code> with your improved architecture</li>
+                        <li>Document showing before/after accuracy comparison</li>
+                        <li>Brief explanation (2-3 paragraphs) of what you changed and why</li>
+                    </ul>
+                </div>
+
+                <div class="task-box">
+                    <h3>Task 2: Training Optimization</h3>
+                    <p><strong>Objective:</strong> Optimize the training process for better performance.</p>
+
+                    <strong>Experiments to Try:</strong>
+                    <ol>
+                        <li>
+                            <strong>Increase Training Epochs</strong>
+                            <ul>
+                                <li>Current: 10 epochs</li>
+                                <li>Try: 15, 20, or 30 epochs</li>
+                                <li>Monitor for overfitting</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Adjust Batch Size</strong>
+                            <ul>
+                                <li>Current: 128</li>
+                                <li>Try: 64, 256, or 512</li>
+                                <li>Smaller batch = more updates, larger batch = more stable</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Try Different Optimizers</strong>
+                            <ul>
+                                <li>Current: Adam</li>
+                                <li>Try: SGD with momentum, RMSprop, AdaGrad</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Implement Learning Rate Scheduling</strong>
+                            <ul>
+                                <li>Start with higher learning rate, decrease over time</li>
+                                <li>Use <code>ReduceLROnPlateau</code> or <code>LearningRateScheduler</code></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Add Data Augmentation</strong>
+                            <ul>
+                                <li>Random rotations (±10 degrees)</li>
+                                <li>Small translations</li>
+                                <li>Helps model generalize better</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <strong>Code Example - Learning Rate Scheduler:</strong>
+                    <pre><code>from tensorflow.keras.callbacks import ReduceLROnPlateau
+
+lr_scheduler = ReduceLROnPlateau(monitor='val_loss', factor=0.5,
+                                  patience=3, min_lr=1e-7)
+
+history = model.fit(x_train, y_train,
+                   epochs=20,
+                   validation_split=0.1,
+                   callbacks=[lr_scheduler])</code></pre>
+                </div>
+
+                <div class="task-box">
+                    <h3>Task 3: Debug Preprocessing Issues</h3>
+                    <p><strong>Objective:</strong> Understand the importance of proper data preprocessing.</p>
+
+                    <strong>Common Preprocessing Issues to Watch For:</strong>
+                    <ol>
+                        <li>
+                            <strong>Image Normalization</strong>
+                            <ul>
+                                <li>MNIST training: pixel values normalized to 0-1 range (÷255)</li>
+                                <li>Prediction: must use the SAME normalization</li>
+                                <li>Mismatch = wrong predictions!</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Bright vs Dark Digits</strong>
+                            <ul>
+                                <li>MNIST: bright digits (high values) on dark background (low values)</li>
+                                <li>Your input: must match this format</li>
+                                <li>Canvas with white strokes on black = correct format (no inversion needed)</li>
+                                <li>Uploaded images with black digits on white = needs inversion</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Image Dimensions</strong>
+                            <ul>
+                                <li>Training: flattened to 784 dimensions (28×28)</li>
+                                <li>Prediction: must also flatten to 784</li>
+                                <li>Order matters: normalize first, then reshape</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <strong>Debugging Exercise:</strong>
+                    <p>Add visualization to see what the model actually receives:</p>
+                    <pre><code># In frontend/app.py, add this after preprocessing:
+import matplotlib.pyplot as plt
+
+# Visualize preprocessed image
+st.write("Preprocessed image (what the model sees):")
+fig, ax = plt.subplots(1, 2, figsize=(8, 4))
+ax[0].imshow(original_image, cmap='gray')
+ax[0].set_title('Original')
+ax[1].imshow(preprocessed_image.reshape(28, 28), cmap='gray')
+ax[1].set_title('After Preprocessing')
+st.pyplot(fig)</code></pre>
+
+                    <strong>Task:</strong> Implement preprocessing validation to ensure:
+                    <ul>
+                        <li>Pixel values are in correct range (0-1 after normalization)</li>
+                        <li>Image dimensions are correct (28×28 or 784)</li>
+                        <li>Digit is bright, background is dark</li>
+                    </ul>
+                </div>
+
+                <div class="task-box">
+                    <h3>Task 4: Evaluation and Analysis</h3>
+                    <p><strong>Objective:</strong> Thoroughly evaluate your model's performance.</p>
+
+                    <strong>Requirements:</strong>
+                    <ol>
+                        <li>Create a confusion matrix showing which digits are commonly confused</li>
+                        <li>Plot training/validation accuracy and loss curves</li>
+                        <li>Calculate precision, recall, and F1-score for each digit</li>
+                        <li>Identify the 10 worst predictions and analyze why they failed</li>
+                        <li>Test the model on your own handwritten digits</li>
+                    </ol>
+
+                    <strong>Bonus:</strong>
+                    <ul>
+                        <li>Compare ANN vs CNN performance (implement a CNN version)</li>
+                        <li>Compare TensorFlow vs PyTorch implementations</li>
+                        <li>Experiment with ensemble methods (combine multiple models)</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box">
+                    <strong>Grading Criteria:</strong>
+                    <ul>
+                        <li><strong>Baseline Performance (20 points):</strong> Successfully run the original model</li>
+                        <li><strong>Improvements (40 points):</strong> Implement at least 3 different improvements</li>
+                        <li><strong>Documentation (20 points):</strong> Clear explanations of changes and results</li>
+                        <li><strong>Analysis (20 points):</strong> Thorough evaluation and insights</li>
+                        <li><strong>Bonus (10 points):</strong> Creative improvements or additional experiments</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 4: Deployment Task -->
+            <section id="section4">
+                <h2>4. Deployment: Streamlit Cloud</h2>
+
+                <div class="task-box">
+                    <h3>Task 5: Deploy Your App to Streamlit Cloud</h3>
+                    <p><strong>Objective:</strong> Make your digit recognition app publicly accessible and share it with the class.</p>
+
+                    <h4>Step 1: Prepare Your Repository</h4>
+                    <ol>
+                        <li>
+                            <strong>Create a GitHub Account</strong>
+                            <ul>
+                                <li>Go to <a href="https://github.com" target="_blank">github.com</a></li>
+                                <li>Sign up for a free account</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Initialize Git Repository</strong>
+                            <pre><code>cd /path/to/ANN
+git init
+git add .
+git commit -m "Initial commit: MNIST digit recognition app"</code></pre>
+                        </li>
+                        <li>
+                            <strong>Create GitHub Repository</strong>
+                            <ul>
+                                <li>On GitHub, click "New Repository"</li>
+                                <li>Name it: <code>mnist-digit-recognition</code></li>
+                                <li>Make it public</li>
+                                <li>Don't initialize with README (you already have one)</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Push to GitHub</strong>
+                            <pre><code>git remote add origin https://github.com/YOUR_USERNAME/mnist-digit-recognition.git
+git branch -M main
+git push -u origin main</code></pre>
+                        </li>
+                    </ol>
+
+                    <h4>Step 2: Prepare for Streamlit Cloud</h4>
+                    <ol>
+                        <li>
+                            <strong>Update requirements.txt</strong>
+                            <p>Make sure it includes all dependencies:</p>
+                            <pre><code>streamlit>=1.28.0
+tensorflow>=2.13.0
+numpy>=1.24.0
+Pillow>=10.0.0
+streamlit-drawable-canvas>=0.9.3</code></pre>
+                        </li>
+                        <li>
+                            <strong>Pre-train Your Model</strong>
+                            <ul>
+                                <li>Train model locally: <code>python backend/model.py</code></li>
+                                <li>Commit the trained model file</li>
+                                <li><strong>IMPORTANT:</strong> Use Git LFS for large files (&gt;100MB)</li>
+                            </ul>
+                            <pre><code>git lfs install
+git lfs track "*.h5"
+git add .gitattributes
+git add mnist_model.h5
+git commit -m "Add trained model"
+git push</code></pre>
+                        </li>
+                        <li>
+                            <strong>Update App Path</strong>
+                            <p>In <code>frontend/app.py</code>, fix the model path:</p>
+                            <pre><code># Change this line:
+model = MNISTModel(model_path='../mnist_model.h5')
+
+# To this (for Streamlit Cloud):
+import os
+model_path = os.path.join(os.path.dirname(__file__), '..', 'mnist_model.h5')
+model = MNISTModel(model_path=model_path)</code></pre>
+                        </li>
+                    </ol>
+
+                    <h4>Step 3: Deploy to Streamlit Cloud</h4>
+                    <ol>
+                        <li>
+                            <strong>Create Streamlit Cloud Account</strong>
+                            <ul>
+                                <li>Go to <a href="https://streamlit.io/cloud" target="_blank">streamlit.io/cloud</a></li>
+                                <li>Sign in with GitHub</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Deploy New App</strong>
+                            <ul>
+                                <li>Click "New app"</li>
+                                <li>Select your repository: <code>mnist-digit-recognition</code></li>
+                                <li>Main file path: <code>frontend/app.py</code></li>
+                                <li>Click "Deploy"</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Wait for Deployment</strong>
+                            <ul>
+                                <li>Streamlit Cloud will install dependencies</li>
+                                <li>Takes 3-5 minutes</li>
+                                <li>Watch the logs for any errors</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Test Your App</strong>
+                            <ul>
+                                <li>Once deployed, you'll get a URL like: <br><code>https://YOUR_USERNAME-mnist-digit-recognition.streamlit.app</code></li>
+                                <li>Test drawing digits and uploading images</li>
+                                <li>Make sure "Load Model" works</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h4>Step 4: Share on Padlet</h4>
+                    <ol>
+                        <li>
+                            <strong>Access Class Padlet</strong>
+                            <ul>
+                                <li>Your instructor will provide the Padlet link</li>
+                                <li>Create a Padlet account if needed</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Create Your Post</strong>
+                            <ul>
+                                <li>Click "+" to add a new post</li>
+                                <li>Title: "MNIST Digit Recognition - [Your Name]"</li>
+                                <li>Include:
+                                    <ul>
+                                        <li>Your Streamlit app URL</li>
+                                        <li>GitHub repository link</li>
+                                        <li>Brief description of improvements you made</li>
+                                        <li>Final test accuracy achieved</li>
+                                        <li>Screenshot of your app in action</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Test Classmates' Apps</strong>
+                            <ul>
+                                <li>Visit at least 3 classmates' apps</li>
+                                <li>Leave constructive feedback on their Padlet posts</li>
+                                <li>Compare different approaches and improvements</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <div class="success-box">
+                        <strong>Example Padlet Post:</strong><br><br>
+                        <strong>MNIST Digit Recognition - John Doe</strong><br><br>
+                        <strong>App URL:</strong> https://johndoe-mnist-digit-recognition.streamlit.app<br>
+                        <strong>GitHub:</strong> https://github.com/johndoe/mnist-digit-recognition<br><br>
+                        <strong>Improvements Made:</strong><br>
+                        - Added 4th hidden layer (64 neurons)<br>
+                        - Increased dropout to 0.3<br>
+                        - Implemented learning rate scheduling<br>
+                        - Added batch normalization<br><br>
+                        <strong>Results:</strong> Improved accuracy from 97.61% to 98.23%<br><br>
+                        <em>[Screenshot of app]</em>
+                    </div>
+
+                    <h4>Troubleshooting Deployment</h4>
+                    <table>
+                        <tr>
+                            <th>Issue</th>
+                            <th>Solution</th>
+                        </tr>
+                        <tr>
+                            <td>ModuleNotFoundError</td>
+                            <td>Add missing package to requirements.txt</td>
+                        </tr>
+                        <tr>
+                            <td>Model file not found</td>
+                            <td>Check file path, ensure model is committed to GitHub</td>
+                        </tr>
+                        <tr>
+                            <td>Out of memory</td>
+                            <td>Use smaller batch size, simplify model</td>
+                        </tr>
+                        <tr>
+                            <td>Slow loading</td>
+                            <td>Use @st.cache_resource for model loading</td>
+                        </tr>
+                        <tr>
+                            <td>Import errors</td>
+                            <td>Update sys.path in app.py to find backend module</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="warning-box">
+                    <strong>Submission Checklist:</strong>
+                    <ul>
+                        <li>✓ GitHub repository is public</li>
+                        <li>✓ All code files are committed</li>
+                        <li>✓ requirements.txt is complete</li>
+                        <li>✓ Trained model is included (or trains on startup)</li>
+                        <li>✓ App successfully deployed to Streamlit Cloud</li>
+                        <li>✓ App URL is working and accessible</li>
+                        <li>✓ Padlet post is complete with all required information</li>
+                        <li>✓ Screenshot included in Padlet post</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 5: Additional Resources -->
+            <section id="section5">
+                <h2>5. Additional Resources</h2>
+
+                <h3>Learning Resources</h3>
+                <ul>
+                    <li><strong>Neural Networks:</strong>
+                        <a href="http://neuralnetworksanddeeplearning.com/" target="_blank">Neural Networks and Deep Learning (Free Book)</a>
+                    </li>
+                    <li><strong>TensorFlow:</strong>
+                        <a href="https://www.tensorflow.org/tutorials" target="_blank">Official TensorFlow Tutorials</a>
+                    </li>
+                    <li><strong>PyTorch:</strong>
+                        <a href="https://pytorch.org/tutorials/" target="_blank">Official PyTorch Tutorials</a>
+                    </li>
+                    <li><strong>MNIST Dataset:</strong>
+                        <a href="http://yann.lecun.com/exdb/mnist/" target="_blank">Yann LeCun's MNIST Page</a>
+                    </li>
+                    <li><strong>Streamlit:</strong>
+                        <a href="https://docs.streamlit.io/" target="_blank">Streamlit Documentation</a>
+                    </li>
+                </ul>
+
+                <h3>Advanced Topics to Explore</h3>
+                <ul>
+                    <li>Convolutional Neural Networks (CNNs)</li>
+                    <li>Transfer Learning</li>
+                    <li>Hyperparameter Tuning (Grid Search, Random Search)</li>
+                    <li>Model Interpretability (Grad-CAM, LIME)</li>
+                    <li>Adversarial Examples</li>
+                    <li>Model Compression and Quantization</li>
+                </ul>
+
+                <h3>Common Questions</h3>
+
+                <div class="info-box">
+                    <strong>Q: Why does my model accuracy vary between runs?</strong><br>
+                    A: Neural networks use random initialization. Use <code>tf.random.set_seed(42)</code> for reproducible results.
+                </div>
+
+                <div class="info-box">
+                    <strong>Q: What is overfitting?</strong><br>
+                    A: When the model performs well on training data but poorly on test data. Solutions: dropout, more data, regularization.
+                </div>
+
+                <div class="info-box">
+                    <strong>Q: Should I use GPU for training?</strong><br>
+                    A: For MNIST with ANN, CPU is sufficient (3-5 minutes). GPU is beneficial for larger datasets or CNNs.
+                </div>
+
+                <div class="info-box">
+                    <strong>Q: Can I use this model for other digit recognition tasks?</strong><br>
+                    A: Yes! The model can recognize any handwritten digits, but works best on images similar to MNIST (centered, bright digits on dark background, 28×28).
+                </div>
+
+                <div class="info-box">
+                    <strong>Q: My predictions are all wrong. What's the issue?</strong><br>
+                    A: Check preprocessing! Common issues:
+                    <ul>
+                        <li>Image not normalized (divide by 255)</li>
+                        <li>Inverted colors (background should be dark, digit bright)</li>
+                        <li>Wrong dimensions (should be flattened to 784)</li>
+                        <li>Add visualization to see what the model receives</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 6: Grading Rubric -->
+            <section id="section6">
+                <h2>6. Grading Rubric</h2>
+
+                <table>
+                    <tr>
+                        <th style="width: 30%;">Category</th>
+                        <th style="width: 15%;">Points</th>
+                        <th>Criteria</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Model Improvements</strong></td>
+                        <td>40</td>
+                        <td>
+                            - Implemented at least 3 architectural changes (20 pts)<br>
+                            - Documented experiments and results (10 pts)<br>
+                            - Achieved improvement over baseline (10 pts)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Code Quality</strong></td>
+                        <td>20</td>
+                        <td>
+                            - Clean, readable code with comments (10 pts)<br>
+                            - Proper error handling (5 pts)<br>
+                            - Follows Python best practices (5 pts)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Documentation</strong></td>
+                        <td>15</td>
+                        <td>
+                            - Clear explanations of changes (10 pts)<br>
+                            - Updated README if necessary (5 pts)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Deployment</strong></td>
+                        <td>15</td>
+                        <td>
+                            - Successful Streamlit Cloud deployment (10 pts)<br>
+                            - App is functional and accessible (5 pts)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Padlet Submission</strong></td>
+                        <td>10</td>
+                        <td>
+                            - Complete post with all required info (7 pts)<br>
+                            - Constructive feedback on 3 classmates' apps (3 pts)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bonus</strong></td>
+                        <td>10</td>
+                        <td>
+                            - PyTorch implementation (5 pts)<br>
+                            - Creative improvements or visualizations (5 pts)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><strong>Total</strong></td>
+                        <td><strong>100 points (110 with bonus)</strong></td>
+                    </tr>
+                </table>
+
+                <div class="success-box">
+                    <strong>Due Date:</strong> <span class="highlight">[Instructor to fill in]</span><br>
+                    <strong>Submission Method:</strong> Padlet link + GitHub repository URL<br>
+                    <strong>Late Penalty:</strong> 10% per day, up to 3 days
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <p><strong>AIT-204: Artificial Neural Networks</strong></p>
+            <p>Grand Canyon University | College of Science, Engineering and Technology</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                For questions or assistance, contact your instructor or visit office hours.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
