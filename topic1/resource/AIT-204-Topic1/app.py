@@ -388,11 +388,11 @@ def main():
 
             # Show data table
             st.markdown("**Dataset Preview (first 100 rows)**")
-            st.dataframe(df.head(100), width="stretch")
+            st.dataframe(df.head(100), use_container_width=True)
 
             # Basic statistics
             st.markdown("**Quick Statistics**")
-            st.dataframe(df.describe(), width="stretch")
+            st.dataframe(df.describe(), use_container_width=True)
 
         # Tab 2: Visualizations
         with tab2:
@@ -411,7 +411,7 @@ def main():
                     "Red line shows the true underlying function."
                 )
                 fig = viz.plot_scatter_1d(df, feature_cols[0], 'y', show_true=True)
-                st.plotly_chart(fig, width="stretch")
+                st.plotly_chart(fig, use_container_width=True)
 
                 # Residual plot
                 if 'y_true' in df.columns:
@@ -421,21 +421,21 @@ def main():
                         "Random scatter around zero indicates good data quality."
                     )
                     fig_resid = viz.plot_residuals(df, 'y', 'y_true', feature_cols[0])
-                    st.plotly_chart(fig_resid, width="stretch")
+                    st.plotly_chart(fig_resid, use_container_width=True)
 
             elif len(feature_cols) == 2:
                 # Two features - 3D plot
                 st.markdown("### 3D Scatter Plot")
                 st.markdown("Visualizing the relationship between two features and the target.")
                 fig_3d = viz.plot_3d_scatter(df, feature_cols[0], feature_cols[1], 'y')
-                st.plotly_chart(fig_3d, width="stretch")
+                st.plotly_chart(fig_3d, use_container_width=True)
 
             elif len(feature_cols) >= 3:
                 # Multiple features - pairwise scatter
                 st.markdown("### Pairwise Feature Relationships")
                 st.markdown("Shows all pairwise scatter plots between features.")
                 fig_pair = viz.plot_pairwise_scatter(df, max_features=min(5, len(feature_cols)))
-                st.plotly_chart(fig_pair, width="stretch")
+                st.plotly_chart(fig_pair, use_container_width=True)
 
             # Distribution plots
             st.markdown("### Feature Distributions")
@@ -444,8 +444,8 @@ def main():
                 df.columns.tolist()
             )
             fig_dist = viz.plot_distribution(df, selected_col)
-            st.plotly_chart(fig_dist, width="stretch")
-
+            st.plotly_chart(fig_dist, use_container_width=True)
+            
             # Q-Q plot for normality
             st.markdown("### Q-Q Plot (Normality Test)")
             st.markdown(
@@ -453,26 +453,26 @@ def main():
                 "Useful for checking if noise is Gaussian."
             )
             fig_qq = viz.plot_qq(df, selected_col)
-            st.plotly_chart(fig_qq, width="stretch")
+            st.plotly_chart(fig_qq, use_container_width=True)
 
             # Correlation heatmap (if multiple features)
             if len(feature_cols) > 1:
                 st.markdown("### Correlation Heatmap")
                 st.markdown("Shows linear relationships between all variables.")
                 fig_corr = viz.plot_correlation_heatmap(df)
-                st.plotly_chart(fig_corr, width="stretch")
+                st.plotly_chart(fig_corr, use_container_width=True)
 
                 # Feature importance
                 st.markdown("### Feature Correlation with Target")
                 st.markdown("Which features have the strongest relationship with the target?")
                 fig_importance = viz.plot_feature_importance_correlation(df)
-                st.plotly_chart(fig_importance, width="stretch")
+                st.plotly_chart(fig_importance, use_container_width=True)
 
             # Box plots
             st.markdown("### Box-and-Whisker Plots")
             st.markdown("Visualize distribution, outliers, and quartiles for all variables.")
             fig_box = viz.plot_box_whisker(df)
-            st.plotly_chart(fig_box, width="stretch")
+            st.plotly_chart(fig_box, use_container_width=True)
 
         # Tab 3: Statistical Analysis
         with tab3:
@@ -502,7 +502,7 @@ def main():
                 "spread (std, variance), and shape (skewness, kurtosis)."
             )
             desc_stats = analyzer.compute_descriptive_stats(df)
-            st.dataframe(desc_stats, width="stretch")
+            st.dataframe(desc_stats, use_container_width=True)
 
             # Correlation analysis
             if len(feature_cols) > 1:
