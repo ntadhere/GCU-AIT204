@@ -25,7 +25,7 @@ if 'model' not in st.session_state:
 @st.cache_resource
 def load_model():
     """Load the trained model"""
-    model = MNISTModel(model_path='../mnist_model.h5')
+    model = MNISTModel(model_path='./mnist_model.h5')
     if model.load_model():
         return model
     else:
