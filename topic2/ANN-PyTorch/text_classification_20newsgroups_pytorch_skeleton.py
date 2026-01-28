@@ -26,10 +26,11 @@ print("Loading 20 Newsgroups dataset...")
 data = fetch_20newsgroups(subset='all', remove=('headers', 'footers', 'quotes'))
 X_raw, y = data.data, data.target
 num_classes = len(data.target_names)
+
 print(f"✓ Dataset loaded: {len(X_raw)} documents, {num_classes} categories")
 
-
 # =========================
+# Preprocess text data
 #  - Convert to lowercase, remove punctuation if desired
 #  - Tokenization is handled by TfidfVectorizer, but you can add custom steps if needed
 # =========================
@@ -72,24 +73,87 @@ X_raw = [preprocess_text(doc) for doc in X_raw]
 print("✓ Preprocessing complete!")
 
 # =========================
-# Convert Text Data to Numerical Format
+# Convert Text Data to Numerical Format using TF-IDF
 # =========================
+print("\n" + "="*80)
+print("CONVERTING TEXT TO NUMERICAL FORMAT (TF-IDF)")
+print("="*80)
+
+print("\nTF-IDF (Term Frequency-Inverse Document Frequency) Configuration:")
+print("  - max_features: 5000 (keep top 5000 most frequent words)")
+print("  - lowercase: True (normalize text)")
+print("  - stop_words: 'english' (remove common words like 'the', 'is', 'and')")
+print("  - strip_accents: 'unicode' (handle special characters)")
+print("  - token_pattern: alphabetic words with 2+ characters only")
+
 vectorizer = TfidfVectorizer(
     max_features=5000,          # Limit to 5000 most frequent words
-    lowercase=True,
-    stop_words='english',
-    strip_accents='unicode',
-    token_pattern=r"(?u)\b[a-zA-Z][a-zA-Z]+\b"
+    lowercase=True,              # Convert to lowercase
+    stop_words='english',        # Remove English stop words
+    strip_accents='unicode',     # Normalize accented characters
+    token_pattern=r"(?u)\b[a-zA-Z][a-zA-Z]+\b"  # Only alphabetic words, 2+ chars
 )
+
+print("\nFitting vectorizer and transforming documents...")
 X_vec = vectorizer.fit_transform(X_raw)
+
+print(f"\n✓ Vectorization complete!")
+print(f"  - Original: {len(X_raw)} text documents")
+print(f"  - Converted to: {X_vec.shape} numerical matrix")
+print(f"  - Vocabulary size: {len(vectorizer.vocabulary_):,} unique words")
+print(f"  - Matrix sparsity: {(1 - X_vec.nnz / (X_vec.shape[0] * X_vec.shape[1])) * 100:.2f}%")
+
+# Show sample vocabulary
+feature_names = vectorizer.get_feature_names_out()
+print(f"\n📋 Sample vocabulary (first 20 words): {', '.join(feature_names[:20])}")
+
+# Convert sparse matrix to dense array for PyTorch
+print("\nConverting sparse matrix to dense array for PyTorch...")
 X_vec = X_vec.toarray()         # NOTE: densifies; OK at 5k features, but watch RAM on small machines
+print(f"✓ Converted to dense array: {X_vec.shape}, Memory: {X_vec.nbytes / (1024**2):.2f} MB")
 
 # =========================
-# Split data
+# Split data into Training and Testing Sets
 # =========================
+print("\n" + "="*80)
+print("SPLITTING DATA INTO TRAINING AND TESTING SETS")
+print("="*80)
+
+print("\nSplit Configuration:")
+print("  - Test size: 20% (0.2)")
+print("  - Train size: 80% (0.8)")
+print("  - Stratified: Yes (maintains class distribution)")
+print("  - Random state: 42 (for reproducibility)")
+
 X_train, X_test, y_train, y_test = train_test_split(
-    X_vec, y, test_size=0.2, stratify=y, random_state=SEED
+    X_vec, y, 
+    test_size=0.2,      # 20% for testing
+    stratify=y,         # Maintain class distribution across train/test
+    random_state=SEED
 )
+
+print(f"\n✓ Data split complete!")
+print(f"  - Training samples: {len(X_train):,} ({len(X_train)/len(X_vec)*100:.1f}%)")
+print(f"  - Testing samples: {len(X_test):,} ({len(X_test)/len(X_vec)*100:.1f}%)")
+print(f"  - Features per sample: {X_train.shape[1]:,}")
+
+# Verify class distribution
+from collections import Counter
+train_dist = Counter(y_train)
+test_dist = Counter(y_test)
+
+print(f"\n✓ Class distribution verification:")
+print(f"  - All {num_classes} classes present in training: {len(train_dist) == num_classes}")
+print(f"  - All {num_classes} classes present in testing: {len(test_dist) == num_classes}")
+
+print(f"\n📊 Sample class distribution (first 5 classes):")
+for i in range(min(5, num_classes)):
+    train_count = train_dist[i]
+    test_count = test_dist[i]
+    total_count = train_count + test_count
+    print(f"  {data.target_names[i]:35s} - Train: {train_count:4d}, Test: {test_count:4d}, Total: {total_count:4d}")
+
+print(f"\n✓ Data ready for PyTorch!")
 
 # =========================
 # Torch Tensors & Dataloaders
