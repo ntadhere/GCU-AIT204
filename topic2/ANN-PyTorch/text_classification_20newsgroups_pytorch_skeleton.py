@@ -30,10 +30,46 @@ print(f"✓ Dataset loaded: {len(X_raw)} documents, {num_classes} categories")
 
 
 # =========================
-# TODO: Preprocess text data
 #  - Convert to lowercase, remove punctuation if desired
 #  - Tokenization is handled by TfidfVectorizer, but you can add custom steps if needed
 # =========================
+import string
+import re
+
+def preprocess_text(text):
+    """
+    Preprocess a single text document.
+    
+    Steps:
+    1. Convert to lowercase
+    2. Remove punctuation
+    3. Remove numbers (optional)
+    4. Remove extra whitespace
+    
+    Args:
+        text (str): Raw text document
+    Returns:
+        str: Preprocessed text
+    """
+    # Convert to lowercase
+    text = text.lower()
+    
+    # Remove punctuation
+    translator = str.maketrans('', '', string.punctuation)
+    text = text.translate(translator)
+    
+    # Remove numbers (optional - comment out if you want to keep numbers)
+    text = re.sub(r'\d+', '', text)
+    
+    # Remove extra whitespace
+    text = ' '.join(text.split())
+    
+    return text
+
+# Apply preprocessing to all documents
+print("Preprocessing text documents (lowercase, remove punctuation, etc.)...")
+X_raw = [preprocess_text(doc) for doc in X_raw]
+print("✓ Preprocessing complete!")
 
 # =========================
 # Convert Text Data to Numerical Format
