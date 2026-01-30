@@ -1,5 +1,5 @@
 # streamlit_app.py
-# FIXED - Matches the actual trained model architecture
+# Clean version without icons
 
 import json
 import joblib
@@ -25,19 +25,17 @@ def load_resources():
         label_names = json.load(f)
     
     # Define model - MUST match training architecture!
-    # The trained model uses nn.Sequential, so we use that here too
     class NewsMLP(nn.Module):
         def __init__(self, input_dim, num_classes):
             super().__init__()
-            # This matches the Sequential architecture from training
             self.net = nn.Sequential(
-                nn.Linear(input_dim, 512),   # net.0
-                nn.ReLU(),                    # net.1
-                nn.Dropout(0.3),             # net.2
-                nn.Linear(512, 256),          # net.3
-                nn.ReLU(),                    # net.4
-                nn.Dropout(0.3),             # net.5
-                nn.Linear(256, num_classes)   # net.6
+                nn.Linear(input_dim, 512),
+                nn.ReLU(),
+                nn.Dropout(0.3),
+                nn.Linear(512, 256),
+                nn.ReLU(),
+                nn.Dropout(0.3),
+                nn.Linear(256, num_classes)
             )
         
         def forward(self, x):
@@ -58,20 +56,20 @@ def load_resources():
 vectorizer, label_names, model = load_resources()
 
 # UI
-st.title("🤖 20 Newsgroups Text Classifier")
+st.title("20 Newsgroups Text Classifier")
 st.markdown("*Powered by PyTorch Neural Network with TF-IDF Features*")
 
 # Sidebar
 with st.sidebar:
-    st.header("ℹ️ About")
+    st.header("About")
     st.write("""
     This classifier uses:
-    - **TF-IDF** vectorization (5000 features)
-    - **Neural Network** with 2 hidden layers
-    - **PyTorch** framework
+    - TF-IDF vectorization (5000 features)
+    - Neural Network with 2 hidden layers
+    - PyTorch framework
     """)
     
-    st.header("📚 Categories")
+    st.header("Categories")
     with st.expander("Show 20 categories"):
         for i, cat in enumerate(label_names, 1):
             st.write(f"{i}. {cat}")
@@ -80,12 +78,12 @@ with st.sidebar:
 st.markdown("---")
 with st.form("predict_form"):
     text = st.text_area(
-        "📝 Enter text to classify:",
+        "Enter text to classify:",
         height=200,
         placeholder="Example: NASA announces new Mars mission with advanced rovers...",
         help="Paste any text and the model will predict which newsgroup category it belongs to"
     )
-    submitted = st.form_submit_button("🔍 Classify", use_container_width=True)
+    submitted = st.form_submit_button("Classify", use_container_width=True)
 
 def predict(texts):
     """Make prediction on input text"""
@@ -98,7 +96,7 @@ def predict(texts):
 
 if submitted:
     if not text.strip():
-        st.warning("⚠️ Please enter some text to classify.")
+        st.warning("Please enter some text to classify.")
     else:
         with st.spinner("Classifying..."):
             pred, probs = predict([text])
@@ -108,11 +106,11 @@ if submitted:
             
             # Display result
             st.markdown("---")
-            st.success(f"### 🎯 **{predicted_label}**")
+            st.success(f"### Prediction: {predicted_label}")
             st.metric("Confidence", f"{confidence:.1%}")
             
             # Top 5 predictions
-            st.markdown("#### 📊 Top 5 Predictions")
+            st.markdown("#### Top 5 Predictions")
             top_5 = np.argsort(-probs[0])[:5]
             
             for rank, idx in enumerate(top_5, 1):
@@ -121,14 +119,7 @@ if submitted:
                 
                 col1, col2, col3 = st.columns([0.5, 4, 1])
                 with col1:
-                    if rank == 1:
-                        st.write("🥇")
-                    elif rank == 2:
-                        st.write("🥈")
-                    elif rank == 3:
-                        st.write("🥉")
-                    else:
-                        st.write(f"**{rank}.**")
+                    st.write(f"**{rank}.**")
                 with col2:
                     st.write(f"**{label}**")
                     st.progress(float(prob))
@@ -136,7 +127,7 @@ if submitted:
                     st.write(f"{prob:.1%}")
             
             # Show all probabilities in expander
-            with st.expander("📈 View All Probabilities"):
+            with st.expander("View All Probabilities"):
                 all_probs = [(label_names[i], probs[0][i]) for i in range(len(label_names))]
                 all_probs.sort(key=lambda x: x[1], reverse=True)
                 
@@ -145,24 +136,24 @@ if submitted:
 
 # Sample examples
 st.markdown("---")
-st.markdown("### 💡 Try These Examples")
+st.markdown("### Try These Examples")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    if st.button("🚀 Space/Science", use_container_width=True):
+    if st.button("Space/Science", use_container_width=True):
         st.session_state.sample = "NASA announces a new mission to Mars with advanced rovers equipped to search for signs of ancient microbial life."
 
 with col2:
-    if st.button("💻 Computer Graphics", use_container_width=True):
+    if st.button("Computer Graphics", use_container_width=True):
         st.session_state.sample = "The new graphics card features ray tracing technology and delivers incredible performance at 4K resolution."
 
 with col3:
-    if st.button("⚾ Baseball", use_container_width=True):
+    if st.button("Baseball", use_container_width=True):
         st.session_state.sample = "The team won the championship after a thrilling game with a walk-off home run in the bottom of the ninth inning."
 
 if 'sample' in st.session_state:
-    st.info(f"📋 Example loaded! Paste it in the text box above and click 'Classify'")
+    st.info(f"Example loaded! Paste it in the text box above and click 'Classify'")
     st.code(st.session_state.sample)
 
 # Footer
