@@ -6,15 +6,13 @@ torchaudio==2.2.2+cpu
 streamlit==1.54.0
 altair==5.5.0
 
-numpy<2
-pandas<3
+numpy==1.26.4
+pandas==2.3.3
 
-
-scikit-learn
-streamlit
-opencv-python-headless
-moviepy
-librosa
-soundfile
-matplotlib
-tqdm
+moviepy==1.0.3
+opencv-python-headless==4.11.0.86
+librosa==0.11.0
+soundfile==0.13.1
+matplotlib==3.10.8
+scikit-learn==1.8.0
+tqdm==4.66.5
