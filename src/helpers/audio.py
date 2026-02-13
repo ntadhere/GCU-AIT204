@@ -14,7 +14,13 @@ def extract_audio_array(path: str, sr: int = 16000) -> np.ndarray:
     if audioclip is None:
         return np.zeros(1, dtype=np.float32)
     # to_soundarray can be large; for short clips (classroom) it's okay
-    audio = audioclip.to_soundarray(fps=sr)  # shape [T, channels] at target fps
+    try:
+        audio = audioclip.to_soundarray(fps=sr)
+    except Exception:
+        return np.zeros(1, dtype=np.float32)
+
+    if audio is None or len(audio) == 0:
+        return np.zeros(1, dtype=np.float32)
     if audio.ndim == 2:
         audio = audio.mean(axis=1)
     return audio.astype(np.float32)
